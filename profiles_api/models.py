@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser
 ### Used for overriding the default permissions
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
+from django.conf import settings
 
 
 # Create your models here.
@@ -78,3 +79,19 @@ class UserProfile(AbstractBaseUser,PermissionsMixin):
         Required when converting UserProfile object to string
         """
         return self.email
+
+
+class ProfileFeedItem(models.Model):
+    """ Profile status update"""
+    # Allowed when ProfileFeedItem matches with UserProfile
+    # Ussing AUTH_USER_MODEL because incase we need to change the model from UserProfile to something else, we would need to change the foreign keys too.
+    user_profile = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete = models.CASCADE
+    )
+    status_text = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self):
+        """ Return the model as a string"""
+        return self.status_text
